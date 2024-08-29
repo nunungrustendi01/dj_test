@@ -11,20 +11,21 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: 3.11
 
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Run Tests
       run: |
+        cd dj_test
         python manage.py test
 
   deploy:
@@ -34,4 +35,3 @@ jobs:
     steps:
     - name: Deploy to Production
       run: |
-        # Add your deployment script or commands here
