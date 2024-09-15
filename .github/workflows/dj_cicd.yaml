@@ -44,7 +44,7 @@ jobs:
   #-- build and push to Dockerhub
   build:
     runs-on: ubuntu-latest
-    needs: [check]
+    needs: [checks]
     if: github.ref == 'refs/heads/main'
     outputs:
       GITHUB_SHA_SHORT: ${{ steps.sha7.outputs.GITHUB_SHA_SHORT }}
