@@ -19,12 +19,12 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.9
 
     - name: Install Dependencies
       run: |
@@ -50,7 +50,7 @@ jobs:
       GITHUB_SHA_SHORT: ${{ steps.sha7.outputs.GITHUB_SHA_SHORT }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Get short SHA
         id: sha7
         run: |
@@ -81,10 +81,10 @@ jobs:
       GITHUB_SHA_SHORT: ${{ needs.build.outputs.GITHUB_SHA_SHORT }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Python 3.9
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
@@ -112,7 +112,7 @@ jobs:
           echo 'REDIS_URI=${{ secrets.REDIS_URI }}' >> .env
 
       - name: Transfer static files to the Swarm manager
-        uses: appleboy/scp-action@v0.1.1
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SWARM_MANAGER_IP }}
           username: ${{ secrets.SSH_USER }}
