@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  django:
+    image: ${REGISTRY}/${IMAGE_NAME}/django-app:${GITHUB_SHA_SHORT}
+    command: gunicorn dj_test.wsgi:application --bind 0.0.0.0:8000 --capture-output --access-logfile -
+    ports:
+      - 8000:8000
+    env_file: .env
+    volumes:
+      - /var/www/${IMAGE_NAME}/media/:/var/www/media/
+    depends_on:
+      - redis
+    deploy:
+      replicas: 1
+      update_config:
+        failure_action: rollback
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - dj_test_network
+  redis:
+    image: redis:6-alpine
+    deploy:
+      replicas: 1
+      update_config:
+        failure_action: rollback
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - dj_test_network
+
+networks:
+  dj_test_network:
+    driver: overlay

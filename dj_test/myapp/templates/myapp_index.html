@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>myapp_index</title>
+</head>
+
+<body>
+    <a href="/">Home</a>
+<ul>
+    {%for item in ls_records%}
+    <li>
+        <h6>{{item.title}}</h6>
+        <p>{{item.description}}</p>
+        <p>test media file</p>
+        {%if item.image%}
+            <img src="{{item.image.url}}" width="300">
+        {%else%}
+            <p>no image</p>
+        {%endif%}
+    </li>
+    {%endfor%}
+</ul>
+</body>
+
+</html>

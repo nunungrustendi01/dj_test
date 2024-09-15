@@ -1,0 +1,28 @@
+services:
+  postgres:
+      image: postgres
+      environment:
+          - POSTGRES_DB=${DB_NAME:-djtestdb}
+      volumes:
+          - djtest_postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6-alpine
+   
+  django:
+    build:
+      context: .
+      dockerfile: ./development/Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./dj_test:/usr/src/dj_test_web/
+    ports:
+      - 8000:8000
+    env_file:
+      - path : ./dj_test.env
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  djtest_postgres-data:
