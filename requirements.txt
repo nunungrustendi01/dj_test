@@ -2,7 +2,7 @@ asgiref==3.8.1
 async-timeout==4.0.3
 black==24.8.0
 click==8.1.7
-Django==5.1
+Django
 django-redis==5.4.0
 mypy-extensions==1.0.0
 packaging==24.1
