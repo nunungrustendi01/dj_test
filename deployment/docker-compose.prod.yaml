@@ -2,7 +2,7 @@
 
 services:
   django:
-    image: ${REGISTRY}/${IMAGE_NAME}/dj_test:${GITHUB_SHA_SHORT}
+    image: ${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA_SHORT}
     command: gunicorn dj_test.wsgi:application --bind 0.0.0.0:8000 --capture-output --access-logfile -
     ports:
       - 8000:8000
