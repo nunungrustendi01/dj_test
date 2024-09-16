@@ -147,11 +147,12 @@ jobs:
           echo "Waiting for deployment..."
           sleep 30
           chmod +x docker-stack-wait.sh
+          echo "run stack wait"
           ./docker-stack-wait.sh -t 300 ${{ env.STACK_NAME }}
 
           echo "Running migrations..."
           # TODO: It would be better to use docker-compose against the django service,
           # but there is currently a bug in docker-compose preventing running services
           # over an SSH host.
-          IMAGE=${REGISTRY}/${IMAGE_NAME}/dj_test:${GITHUB_SHA_SHORT}
+          IMAGE=${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA_SHORT}
           docker run --rm --env-file .env ${IMAGE} python manage.py migrate
