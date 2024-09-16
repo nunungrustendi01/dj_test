@@ -5,4 +5,4 @@ services:
     build:
       context: ..
       dockerfile: ./deployment/Dockerfile
-    image: ${REGISTRY}/${IMAGE_NAME}/django-app:${GITHUB_SHA_SHORT}
+    image: ${IMAGE_NAME}/dj_test:${GITHUB_SHA_SHORT}

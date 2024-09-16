@@ -152,5 +152,5 @@ jobs:
           # TODO: It would be better to use docker-compose against the django service,
           # but there is currently a bug in docker-compose preventing running services
           # over an SSH host.
-          IMAGE=${REGISTRY}/${IMAGE_NAME}/django-app:${GITHUB_SHA_SHORT}
+          IMAGE=${IMAGE_NAME}/dj_test:${GITHUB_SHA_SHORT}
           docker run --rm --env-file .env ${IMAGE} python manage.py migrate
