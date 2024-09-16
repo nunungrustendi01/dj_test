@@ -71,7 +71,7 @@ jobs:
   
   #-- deploy on VPS
   deploy:
-    runs-on: debian-latest
+    runs-on: debian:bullseye-slim
     needs: [checks, build]
     if: github.ref == 'refs/heads/main'
     defaults:
