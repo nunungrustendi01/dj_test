@@ -7,21 +7,26 @@
 set -e
 trap "{ exit 1; }" TERM INT
 opt_h=0
+opt_l=""
 opt_r=0
 opt_s=5
 opt_t=3600
 start_epoc=$(date +%s)
+cmd_min_timeout=15
 
 usage() {
   echo "$(basename $0) [opts] stack_name"
   echo "  -f filter: only wait for services matching filter, may be passed multiple"
   echo "             times, see docker stack services for the filter syntax"
   echo "  -h:        this help message"
+  echo "  -l flags:  Print logs of relevant services at end."
+  echo "             Flags are passed directly to the end of 'docker service logs'."
+  echo "             Example usage: -l '--tail 20' or -l '--since 20m'"
   echo "  -n name:   only wait for specific service names, overrides any filters,"
   echo "             may be passed multiple times, do not include the stack name prefix"
   echo "  -r:        treat a rollback as successful"
   echo "  -s sec:    frequency to poll service state (default $opt_s sec)"
-  echo "  -t sec:    timeout to stop waiting"
+  echo "  -t sec:    timeout to stop waiting (default $opt_t sec)"
   [ "$opt_h" = "1" ] && exit 0 || exit 1
 }
 check_timeout() {
@@ -32,8 +37,23 @@ check_timeout() {
     cutoff_epoc=$(expr ${start_epoc} + $opt_t - $opt_s)
     if [ "$cur_epoc" -gt "$cutoff_epoc" ]; then
       echo "Error: Timeout exceeded"
+      print_service_logs
       exit 1
     fi
+  fi
+}
+cmd_with_timeout() {
+  # run a command that will not exceed the timeout
+  # there is a minimum time all commands are given
+  if [ "$opt_t" -gt 0 ]; then
+    cur_epoc=$(date +%s)
+    remain_timeout=$(expr ${start_epoc} + ${opt_t} - ${cur_epoc})
+    if [ "${remain_timeout}" -lt "${cmd_min_timeout}" ]; then
+      remain_timeout=${cmd_min_timeout}
+    fi
+    timeout ${remain_timeout} "$@"
+  else
+    "$@"
   fi
 }
 get_service_ids() {
@@ -58,12 +78,22 @@ service_state() {
     eval cache_${service_safe}=\"\$state\"
   fi
 }
+print_service_logs() {
+  if [ "$opt_l" != "" ]; then
+    service_ids=$(get_service_ids)
+    for service_id in ${service_ids}; do
+      cmd_with_timeout docker service logs $opt_l "$service_id"
+    done
+  fi
+}
 
-while getopts 'f:hn:rs:t:' opt; do
+while getopts 'f:hl:n:p:rs:t:' opt; do
   case $opt in
     f) opt_f="${opt_f:+${opt_f} }-f $OPTARG";;
     h) opt_h=1;;
+    l) opt_l="$OPTARG";;
     n) opt_n="${opt_n:+${opt_n} } $OPTARG";;
+    p) opt_l="--tail $OPTARG";; # -p was deprecated in favor of -l
     r) opt_r=1;;
     s) opt_s="$OPTARG";;
     t) opt_t="$OPTARG";;
@@ -83,12 +113,16 @@ while [ "$stack_done" != "1" ]; do
   stack_done=1
   # run get_service_ids outside of the for loop to catch errors
   service_ids=$(get_service_ids)
+  if [ -z "${service_ids}" ]; then
+    echo "Error: no services found" >&2
+    exit 1
+  fi
   for service_id in ${service_ids}; do
     service_done=1
     service=$(docker service inspect --format '{{.Spec.Name}}' "$service_id")
 
-    # hardcode a "new" state when UpdateStatus is not defined
-    state=$(docker service inspect -f '{{if .UpdateStatus}}{{.UpdateStatus.State}}{{else}}new{{end}}' "$service_id")
+    # hardcode a "deployed" state when UpdateStatus is not defined
+    state=$(docker service inspect -f '{{if .UpdateStatus}}{{.UpdateStatus.State}}{{else}}deployed{{end}}' "$service_id")
 
     # check for failed update states
     case "$state" in
@@ -118,7 +152,7 @@ while [ "$stack_done" != "1" ]; do
     # check for states that indicate an update is done
     if [ "$service_done" = "1" ]; then
       case "$state" in
-        new|completed|rollback_completed)
+        deployed|completed|rollback_completed)
           service_done=1
           ;;
         *)
@@ -139,6 +173,7 @@ while [ "$stack_done" != "1" ]; do
   done
   if [ "$stack_done" = "2" ]; then
     echo "Error: This deployment will not complete"
+    print_service_logs
     exit 1
   fi
   if [ "$stack_done" != "1" ]; then
@@ -146,3 +181,5 @@ while [ "$stack_done" != "1" ]; do
     sleep "${opt_s}"
   fi
 done
+
+print_service_logs
