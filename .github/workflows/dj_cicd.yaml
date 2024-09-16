@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  #REGISTRY: ghcr.io
+  REGISTRY: ${{ secrets.DHUB_REGISTRY }}
   IMAGE_NAME: ${{ github.repository }}
   STACK_NAME: dj_test
 
@@ -152,5 +152,5 @@ jobs:
           # TODO: It would be better to use docker-compose against the django service,
           # but there is currently a bug in docker-compose preventing running services
           # over an SSH host.
-          IMAGE=${IMAGE_NAME}/dj_test:${GITHUB_SHA_SHORT}
+          IMAGE=${REGISTRY}/${IMAGE_NAME}/dj_test:${GITHUB_SHA_SHORT}
           docker run --rm --env-file .env ${IMAGE} python manage.py migrate
