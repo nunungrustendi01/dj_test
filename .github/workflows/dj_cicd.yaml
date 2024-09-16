@@ -95,7 +95,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Collect static
-        working-directory: .
+        working-directory: dj_test
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: python manage.py collectstatic
