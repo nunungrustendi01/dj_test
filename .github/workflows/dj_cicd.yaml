@@ -142,7 +142,7 @@ jobs:
           echo ${{ secrets.DHUB_TOKEN }} | docker login -u ${{ secrets.DHUB_USERNAME }} --password-stdin
 
           echo "Bringing up deployment..."
-          docker stack deploy --prune --with-registry-auth -c docker-compose.prod.yml ${{ env.STACK_NAME }}
+          docker stack deploy --prune --with-registry-auth -c docker-compose.prod.yaml ${{ env.STACK_NAME }}
 
           echo "Waiting for deployment..."
           sleep 30
