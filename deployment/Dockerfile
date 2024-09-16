@@ -15,7 +15,7 @@ COPY requirements.txt /usr/src/dj_test_web/requirements.txt
 RUN pip install -r /usr/src/dj_test_web/requirements.txt
 
 # Copy app
-COPY dj_test_web/ /usr/src/dj_test_web/
+COPY dj_test/ /usr/src/dj_test_web/
 
 # Copy entrypoint
 COPY deployment/entrypoint.sh /usr/src/entrypoint.sh
