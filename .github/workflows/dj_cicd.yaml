@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ${{ secrets.DHUB_REGISTRY }}
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: dj_test # ${{ github.repository }}
   STACK_NAME: dj_test
 
 jobs:
