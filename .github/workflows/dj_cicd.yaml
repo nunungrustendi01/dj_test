@@ -66,8 +66,8 @@ jobs:
       
       - name: Build and push Docker image
         run: |
-          docker compose -f deployment/docker-compose.ci.yml build
-          docker compose -f deployment/docker-compose.ci.yml push
+          docker compose -f deployment/docker-compose.ci.yaml build
+          docker compose -f deployment/docker-compose.ci.yaml push
   
   #-- deploy on VPS
   deploy:
