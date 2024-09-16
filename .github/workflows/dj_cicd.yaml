@@ -98,7 +98,7 @@ jobs:
         working-directory: dj_test
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        run: python manage.py collectstatic
+        run: python manage.py collectstatic --noinput
 
       - name: Set environment variables in .env
         run: |
