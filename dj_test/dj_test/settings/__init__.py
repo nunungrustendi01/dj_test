@@ -18,7 +18,8 @@ if DEBUG:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 else:
     # Include your domain or IP address here
-    ALLOWED_HOSTS = ["nu2ng-r.my.id"]
+    ALLOWED_HOSTS = ["nu2ng-r.my.id", "www.nu2ng-r.my.id"]
+CSRF_TRUSTED_ORIGINS = ["https://nu2ng-r.my.id","https://www.nu2ng-r.my.id"]
 
 
 # Application definition
